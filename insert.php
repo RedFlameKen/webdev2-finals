@@ -118,7 +118,7 @@ function acceptSubmission($con){
                 <p class="result-message">Successfully registered the student! Click the button below to return to the registration form:</p>
             </div>
             <div class="result-button-container">
-            <button id="result-button" type="button" onclick="window.open('form.html', '_self')" ?> OK</button>
+            <button class="success-button" id="result-button" type="button" onclick="window.open('form.html', '_self')" ?> OK</button>
             </div>
         </div>
 
@@ -134,7 +134,7 @@ function acceptSubmission($con){
                 <p class="result-message">Failed to register the student. Click the button below to return to the registration form:</p>
             </div>
             <div class="result-button-container">
-                <button id="result-button" type="button" onclick="window.open('form.html', '_self')" >OK</button>
+                <button class="failed-button" id="result-button" type="button" onclick="window.open('form.html', '_self')" >OK</button>
             </div>
         </div>
 <?php endif; ?>

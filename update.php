@@ -31,7 +31,7 @@ function updateStudentInDB($con, $id){
     if(isset($_FILES["image-input"]) && $_FILES["image-input"]["error"] == 0){
         if(isset($_FILES["image-input"]["tmp_name"])){
             $picture_name = $_FILES["image-input"]["tmp_name"];
-            $picture_data = ($picture_name != "" ? file_get_contents($picture_name) : null);
+            $picture_data = ($picture_name != "" ? file_get_contents($picture_name) : "");
         }
     }
     $command = "update students set full_name=?, dob=?, gender=?, course=?, year_level=?,contact_number=?, email=?, profile_picture=? where id=?";
@@ -97,7 +97,7 @@ function initStudent($row, $id){
         ->setYearLevel($row["year_level"])
         ->setContact($row["contact_number"])
         ->setEmail($row["email"])
-        ->setPictureData($row["profile_picture"])
+        ->setPictureData(($row["profile_picture"] == null ? "" : $row["profile_picture"]))
         ->build();
 }
 
@@ -208,6 +208,7 @@ $student = initPage($con);
                             src="<?php echo 'pfp.php?id=' . $student->getId() ?>"
                              onerror="this.onerror=null; this.src='https://static.vecteezy.com/system/resources/previews/004/511/281/original/default-avatar-photo-placeholder-profile-picture-vector.jpg';" 
                             width="128" height="128">
+                            <label for="image-input" class="image-input-label">Browse...</label>
                             <input type="file" class="image-input" accept="image/*" name="image-input" id="image-input">
                         </div>
                     </div>

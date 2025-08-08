@@ -9,7 +9,7 @@
     --primary:          #98971a;
     --primary-d:        #93921b;
     --secondary:        #458588;
-    --accent:           #458588;
+    --accent:           #b8bb26;
     --error:            #cc241d;
 
     --gruvbox-bg:       #282828;
@@ -292,14 +292,22 @@ input[type="radio"]{
     accent-color: var(--accent);
 }
 
+.image-input {
+    display: none;
+}
+
 .form-top-inputs {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
+.image-panel,
+.profile-picture-frame,
+.image-input-label,
 .image-input {
     margin-top: auto;
-    vertical-align: bottom;
+    margin-bottom: 0;
 }
 
 /* dashboard styling */
@@ -479,6 +487,7 @@ input[type="radio"]{
     margin: auto;
 }
 
+.image-input-label,
 .button-cell button {
     color: var(--bg1);
     background-color: var(--fg1);
@@ -491,6 +500,7 @@ input[type="radio"]{
     margin: auto;
 }
 
+.image-input-label:hover,
 .button-cell button:hover {
     color: var(--bg1);
     background-color: var(--fg2);
@@ -503,8 +513,15 @@ input[type="radio"]{
     margin: auto;
 }
 
+.image-input-label:active,
 .button-cell button:active {
     background-color: var(--gruvbox-fg3);
+}
+
+.image-input-label:hover,
+.image-input-label:active,
+.image-input-label {
+    padding: 6px;
 }
 
 /* result screen styling */
@@ -564,15 +581,23 @@ input[type="radio"]{
 }
 
 #result-button {
-    background-color: var(--secondary);
     color: var(--fg1);
     width: 100%;
     border: none;
     font-size: 14pt;
+    font-weight: bold;
     padding-top: 10px;
     padding-bottom: 10px;
     box-sizing: content-box;
     border-radius: 8px;
+}
+
+.success-button {
+    background-color: var(--gruvbox-green-l);
+}
+
+.failed-button {
+    background-color: var(--gruvbox-red);
 }
 
 /* dialog styles */
@@ -673,3 +698,4 @@ input[type="radio"]{
 .bold {
     font-weight: bold;
 }
+
