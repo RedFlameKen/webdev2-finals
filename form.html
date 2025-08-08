@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registration Form</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="nav-bar">
+        <div class="nav-header">
+            <p>Student Registration</p>
+        </div>
+
+        <div class="nav-links">
+            <div class="nav-anchor dashboard-anchor">
+                <a href="dashboard.php">Dashboard</a>
+            </div>
+            <div class="nav-anchor register-anchor">
+                <a href="form.html">Register</a>
+            </div>
+        </div>
+    </div>
+    <div class="main-content-panel">
+        <div class="form-panel">
+            <div class="form-input-container">
+                <form id="registration-form" class="registration-form" method="post" action="insert.php" onsubmit="return validateForm()" enctype="multipart/form-data">
+                    <div class="form-top-inputs">
+                        <div class="image-panel">
+                            <img id="profile-picture-frame"
+                            src="https://static.vecteezy.com/system/resources/previews/004/511/281/original/default-avatar-photo-placeholder-profile-picture-vector.jpg"
+                            width="128" height="128">
+                            <input type="file" class="image-input" name="image-input" id="image-input">
+                        </div>
+                    </div>
+                    <div class="input-box">
+                        <div class="form-label-row">
+                            <label>Fullname</label><label class="require-label fullname-require-label">*</label>
+                        </div>
+                        <input type="text" id="fullname-field" name="fullname-field" class="registration-input">
+                    </div>
+                    <div class="input-box">
+                        <div class="form-label-row">
+                            <label>Date of Birth</label><label class="require-label dob-require-label">*</label>
+                        </div>
+                        <input type="date" id="dob-field" name="dob-field" class="registration-input">
+                    </div>
+                    <div class="input-box">
+                        <label>Gender</label>
+                        <div class="radio-box">
+                            <div class="radio-label-pair">
+                                <input type="radio" id="male-gender-radio" name="gender-radio" value="Male" checked="checked"><label>Male</label>
+                            </div>
+                            <div class="radio-label-pair">
+                                <input type="radio" id="female-gender-radio" name="gender-radio" value="Female"><label>Female</label>
+                            </div>
+                            <div class="radio-label-pair">
+                                <input type="radio" id="other-gender-radio" name="gender-radio" value="Other"><label>Other</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-box">
+                        <div class="form-label-row">
+                            <label>Course</label><label class="require-label course-require-label">*</label>
+                        </div>
+                        <input type="text" id="course-field" name="course-field" class="registration-input">
+                    </div>
+                    <div class="input-box">
+                        <label>Year Level</label>
+                        <select id="yearlevel-field" name="yearlevel-field" class="registration-input">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="input-box">
+                        <div class="form-label-row">
+                            <label>Contact Number</label><label class="require-label contact-require-label">*</label>
+                        </div>
+                        <input type="text" id="contact-field" name="contact-field" class="registration-input">
+                    </div>
+                    <div class="input-box">
+                        <div class="form-label-row">
+                            <label>Email</label><label class="require-label email-require-label">*</label>
+                        </div>
+                        <input type="email" id="email-field" name="email-field" class="registration-input">
+                    </div>
+                    <div class="input-box">
+                        <button type="submit" id="submit-button" name="submit-button" class="registration-submit">Register</button>
+                    </div>
+                    <div class="input-box">
+                        <button type="button" class="reset-form-button" name="reset-button" src="res/reset.svg" onclick="showDialog(event, 'Are you sure you want to reset?')">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="form.js"></script>
+
+</html>

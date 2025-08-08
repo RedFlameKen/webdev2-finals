@@ -1,0 +1,420 @@
+<?php
+/**
+ * contains necessary data for a cell in the records table
+ */
+class DataCell {
+    public $html = "";
+    public $column_class = "";
+    public $data = "";
+
+    /**
+     * @param mixed $column_class
+     * @param mixed $data
+     */
+    function __construct($column_class, $data){
+        $this->column_class = $column_class;
+        $this->data = $data;
+        $this->html = "<div class=\"data-cell $column_class\">
+                        <p class=\"data\">$data</p>
+                    </div>";
+    }
+
+}
+
+/**
+ * Builder for a single student record row in the records table.
+ */
+class DataRowBuilder{
+    private int $id;
+    private $id_cell;
+    private $fullname_cell;
+    private $dob_cell;
+    private $gender_cell;
+    private $course_cell;
+    private $yearlevel_cell;
+    private $contact_cell;
+    private $email_cell;
+    private $is_alt;
+    private $table_class = " table-row";
+
+    function getEmail(): DataCell{
+        return $this->email_cell;
+    }
+
+    function getContact(): DataCell{
+        return $this->contact_cell;
+    }
+
+    function getYearlevel(): DataCell{
+        return $this->yearlevel_cell;
+    }
+
+    function getCourse(): DataCell{
+        return $this->course_cell;
+    }
+
+    function getGender(): DataCell{
+        return $this->gender_cell;
+    }
+
+    function getDob(): DataCell{
+        return $this->dob_cell;
+    }
+
+    function getFullname(): DataCell{
+        return $this->fullname_cell;
+    }
+
+    function getId(): DataCell{
+        return $this->id_cell;
+    }
+
+    /**
+     * @param mixed $data
+     * @return DataRowBuilder
+     */
+    function setEmailCell($data){
+        $this->email_cell = new DataCell("email-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return DataRowBuilder
+     */
+    function setContactCell($data){
+        $this->contact_cell = new DataCell("contact-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return DataRowBuilder
+     */
+    function setYearlevelCell($data){
+        $this->yearlevel_cell = new DataCell("yearlevel-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return DataRowBuilder
+     */
+    function setCourseCell($data){
+        $this->course_cell = new DataCell("course-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return DataRowBuilder
+     */
+    function setGenderCell($data){
+        $this->gender_cell = new DataCell("gender-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return DataRowBuilder
+     */
+    function setDobCell($data){
+        $this->dob_cell = new DataCell("dob-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return DataRowBuilder
+     */
+    function setFullnameCell($data){
+        $this->fullname_cell = new DataCell("fullname-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param int $data
+     * @return DataRowBuilder
+     */
+    function setIdCell($data){
+        $this->id = $data;
+        $this->id_cell = new DataCell("id-cell", $data);
+        return $this;
+    }
+
+    /**
+     * @param bool $is_alt
+     * @return DataRowBuilder
+     */
+    function setAlt($is_alt){
+        $this->is_alt = $is_alt;
+        if($is_alt)
+            $this->table_class = "table-row-alt";
+        else
+            $this->table_class = "table-row";
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    function build(): string{
+        $row = "<div class=\"". $this->table_class ."\">"
+            . $this->id_cell->html
+            . $this->fullname_cell->html
+            . $this->dob_cell->html
+            . $this->gender_cell->html
+            . $this->course_cell->html
+            . $this->yearlevel_cell->html
+            . $this->contact_cell->html
+            . $this->email_cell->html
+            . "<div class=\"data-cell button-cell\">
+                    <form method=\"post\" action=\"update.php\">
+                      <button type=\"submit\" name=\"edit_entry_button\" value=\"$this->id\">Edit</button>
+                    </form>
+                      <button type=\"submit\" name=\"delete_button\" onclick='showDialog(\"Are you sure you want to delete?\",$this->id, \"delete.php\")'>Delete</button>
+                    </div>" .
+            "</div>";
+        return $row;
+    }
+
+}
+
+$servername="localhost";
+$username="root";
+$password="root";
+$database="school_db";
+
+$con = new mysqli($servername, $username, $password, $database);
+    
+function getYearlevelFilter(){
+    if(isset($_POST['yearlevel_field'])){
+        return $_POST['yearlevel_field'];
+    }
+}
+
+function getCourseSearchFilter(){
+    if(isset($_POST['search_input'])){
+        return $_POST['search_input'];
+    }
+}
+
+/**
+ * Queries the number of entries fetched using the $command generated by
+ * buildFetchCommand().
+ *
+ * @param mysqli $con
+ * @return int the number of rows/entries fetched
+ */
+function getResultsCount($con){
+    $command = buildFetchCommand("desc", "COUNT(*)");
+    $result = $con->query($command);
+    if($row = $result->fetch_assoc()){
+        return $row["COUNT(*)"];
+    }
+}
+
+/**
+ * builds the fetch command for the student records applying filters if any are set. 
+ *
+ * @param string $order_direction defaults to "desc". the direction of the
+ * "order by" argument (either "desc" or "asc")
+ * @param string $target defaults to "*". The target columns of the select command.
+ * @return string the fetch command generated
+ */
+function buildFetchCommand($order_direction = "desc", $target = "*"){
+    if($_SERVER["REQUEST_METHOD"] == "GET"){
+        return "select $target from students order by created_at $order_direction";
+    }
+
+    if($_SERVER["REQUEST_METHOD"] != "POST"){
+        return "";
+    }
+
+    $yearlevel_filter = getYearlevelFilter();
+    $course_search_filter = getCourseSearchFilter();
+    $command = "select $target from students";
+    if($yearlevel_filter != -1 || $course_search_filter != null){
+        $command = "$command where ";
+        if($yearlevel_filter != -1 && ($course_search_filter != null && $course_search_filter !== "")){
+            $command = "$command year_level=$yearlevel_filter and course='$course_search_filter'";
+        }
+        elseif($yearlevel_filter != -1){
+            $command = "$command year_level=$yearlevel_filter";
+        }
+        elseif($course_search_filter != null && $course_search_filter !== "" && !ctype_space($course_search_filter)){
+            $command = "$command course='$course_search_filter'";
+        }
+    }
+
+    $command = "$command order by created_at $order_direction";
+    return $command;
+}
+
+/**
+ * Builds a table row using DataRowBuilder() and echos the generated output.
+ *
+ * @param mysqli $con
+ * @param mixed $order_direction
+ * @return void
+ */
+function fetchStudents($con, $order_direction = "desc"): void {
+    $yearlevel_filter = -1;
+    $course_search_filter = "";
+
+    $command = buildFetchCommand($order_direction);
+
+    /** @var mysqli_result */
+    $result = $con->query($command);
+    
+    $rows = 0;
+    while ($row = $result->fetch_assoc()) {
+        $table_row = new DataRowBuilder()
+            ->setAlt($rows % 2 != 0)
+            ->setIdCell($row["id"])
+            ->setFullnameCell($row["full_name"])
+            ->setDobCell($row["dob"])
+            ->setGenderCell($row["gender"])
+            ->setCourseCell($row["course"])
+            ->setYearlevelCell($row["year_level"])
+            ->setContactCell($row["contact_number"])
+            ->setEmailCell($row["email"])
+            ->build();
+        $rows++;
+        echo $table_row;
+    }
+}
+
+/**
+ * builds a single year level option. If $i is equal to $yearlevel, the option
+ * is set as selected.
+ *
+ * @param int|string $i the current iteration in buildYearlevelSelect() or just a string.
+ * @param int|string $yearlevel the current year level filter.
+ */
+function buildYearlevelOption($i, $yearlevel){
+    return "<option value=\"". ($i == "---" ? -1 : $i) ."\"" 
+        . ($i == $yearlevel ?  " selected" : "")
+        . ">$i</option>";
+}
+
+/**
+ * generates the year level filter input field.
+ *
+ * @param int|string $yearlevel the student's current year level
+ */
+function buildYearlevelSelect($yearlevel){
+    $select = "<select name=\"yearlevel_field\" class=\"control-panel-input\">";
+        $select = $select . buildYearlevelOption("---", $yearlevel);
+    for ($i=1; $i <= 4; $i++) { 
+        $select = $select . buildYearlevelOption($i, $yearlevel);
+    }
+    $select = "$select
+        </select>";
+    return $select;
+}
+
+// initial filter values
+$prev_year_filter = "---";
+$prev_course_filter = "";
+
+// bring back the previous values of the filters from before pressing apply
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+    $prev_year_filter = getYearlevelFilter();
+    $prev_course_filter = getCourseSearchFilter();
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="nav-bar">
+        <div class="nav-header">
+            <p>Student Registration</p>
+        </div>
+
+        <div class="nav-links">
+            <div class="nav-anchor dashboard-anchor">
+                <a href="dashboard.php">Dashboard</a>
+            </div>
+            <div class="nav-anchor register-anchor">
+                <a href="form.html">Register</a>
+            </div>
+        </div>
+    </div>
+    <div class="main-content-panel">
+        <div class="table-control-panel-container">
+            <form method="post" action="dashboard.php">
+                <div class="table-control-panel">
+                    <div class="control-input-box">
+                        <label for="search_input">Search by course:</label>
+                        <input type="text" name="search_input" class="control-panel-input" value="<?php echo $prev_course_filter; ?>">
+                    </div>
+                    <div class="control-input-box">
+                        <label for="search_input">Search by course:</label>
+                    <?php echo buildYearlevelSelect($prev_year_filter); ?>
+                    </div>
+                    <div class="control-input-box">
+                        <input type="submit" name="apply-button" class="control-panel-input" value="Apply">
+                    </div>
+                    <div class="control-input-box">
+                        <input type="reset" name="reset-button" class="control-panel-input" value="Reset">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="result-details-panel-container">
+            <div class="result-details-panel">
+                <div class="result-label-container">
+                    <p class="result-label">Total results:</p><p class="result-count-label"><?php echo getResultsCount($con); ?></p>
+                </div>
+            </div>
+        </div>
+        <div class="students-table-panel">
+            <div class="students-table">
+                <div class="table-row column-label-row">
+                    <div class="column-label-cell id-cell">
+                        <p class="column-label">ID</p>
+                    </div>
+                    <div class="column-label-cell">
+                        <p class="column-label">Fullname</p>
+                    </div>
+                    <div class="column-label-cell dob-cell">
+                        <p class="column-label">Date of Birth</p>
+                    </div>
+                    <div class="column-label-cell gender-cell">
+                        <p class="column-label">Gender</p>
+                    </div>
+                    <div class="column-label-cell course-cell">
+                        <p class="column-label">Course</p>
+                    </div>
+                    <div class="column-label-cell yearlevel-cell">
+                        <p class="column-label">Year level</p>
+                    </div>
+                    <div class="column-label-cell contact-cell">
+                        <p class="column-label">Contact number</p>
+                    </div>
+                    <div class="column-label-cell">
+                        <p class="column-label">Email Address</p>
+                    </div>
+                    <div class="column-label-cell button-cell">
+                        <p class="column-label"></p>
+                    </div>
+                </div>
+            <?php fetchStudents($con, "desc"); ?>
+            </div>
+        </div>
+        </div>
+    <script src="confirm_dialog.js"></script>
+</body>
+
+</html>
